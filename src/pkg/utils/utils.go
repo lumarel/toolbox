@@ -109,6 +109,12 @@ var (
 			getFullyQualifiedImageRHEL,
 			parseReleaseRHEL,
 		},
+		"rocky": {
+			"rocky-toolbox",
+			"rocky-toolbox",
+			getFullyQualifiedImageRocky,
+			parseReleaseRocky,
+		},
 		"ubuntu": {
 			"ubuntu-toolbox",
 			"ubuntu-toolbox",
@@ -347,6 +353,11 @@ func getFullyQualifiedImageRHEL(image, release string) string {
 
 	releaseMajor := release[:i]
 	imageFull := "registry.access.redhat.com/ubi" + releaseMajor + "/" + image
+	return imageFull
+}
+
+func getFullyQualifiedImageRocky(image, release string) string {
+	imageFull := "docker.io/rockylinux/" + image
 	return imageFull
 }
 
@@ -679,6 +690,20 @@ func parseReleaseRHEL(release string) (string, error) {
 
 	if releaseN <= 0 {
 		return "", &ParseReleaseError{"The release must be a positive number."}
+	}
+
+	return release, nil
+}
+
+func parseReleaseRocky(release string) (string, error) {
+	releaseN, err := strconv.Atoi(release)
+	if err != nil {
+		logrus.Debugf("Parsing release %s as an integer failed: %s", release, err)
+		return "", &ParseReleaseError{"The release must be a positive integer."}
+	}
+
+	if releaseN <= 0 {
+		return "", &ParseReleaseError{"The release must be a positive integer."}
 	}
 
 	return release, nil
